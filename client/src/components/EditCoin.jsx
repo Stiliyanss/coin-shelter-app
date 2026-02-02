@@ -6,6 +6,7 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
     image: '',
     material: '',
     price: '',
+    purchased_at: '',
     description: '',
     mint: '',
     country: '',
@@ -41,6 +42,7 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
      onUpdateCoin({
   ...formData,
   price: formData.price === '' ? null : Number(formData.price),
+  purchased_at: formData.purchased_at || null,
   year: formData.year === '' ? null : Number(formData.year),
   weight: formData.weight === '' ? null : Number(formData.weight),
   diameter: formData.diameter === '' ? null : Number(formData.diameter),
@@ -113,7 +115,7 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
                     alt="Preview"
                     className="w-32 h-32 object-cover rounded-lg border border-white/10"
                     onError={(e) => {
-                      e.target.style.display = 'none'
+                      e.target.style.display = "none";
                     }}
                   />
                 </div>
@@ -132,12 +134,24 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
                 required
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-amber-400/50 focus:bg-white/10 transition-all duration-300"
               >
-                <option value="" className="bg-black">Select material</option>
-                <option value="Gold" className="bg-black">Gold</option>
-                <option value="Silver" className="bg-black">Silver</option>
-                <option value="Platinum" className="bg-black">Platinum</option>
-                <option value="Copper" className="bg-black">Copper</option>
-                <option value="Other" className="bg-black">Other</option>
+                <option value="" className="bg-black">
+                  Select material
+                </option>
+                <option value="Gold" className="bg-black">
+                  Gold
+                </option>
+                <option value="Silver" className="bg-black">
+                  Silver
+                </option>
+                <option value="Platinum" className="bg-black">
+                  Platinum
+                </option>
+                <option value="Copper" className="bg-black">
+                  Copper
+                </option>
+                <option value="Other" className="bg-black">
+                  Other
+                </option>
               </select>
             </div>
 
@@ -156,6 +170,20 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
                 step="0.01"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 focus:bg-white/10 transition-all duration-300"
                 placeholder="0.00"
+              />
+            </div>
+
+            {/* Purchase date */}
+            <div>
+              <label className="block text-xs font-light tracking-widest uppercase text-white/50 mb-2">
+                Purchase date
+              </label>
+              <input
+                type="date"
+                name="purchased_at"
+                value={formData.purchased_at}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-amber-400/50 focus:bg-white/10 transition-all duration-300"
               />
             </div>
 
@@ -309,7 +337,7 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default EditCoin
