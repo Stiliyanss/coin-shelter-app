@@ -27,6 +27,16 @@ function Catalog({ coins, onAddCoin, onEditCoin, onDeleteCoin }) {
   return list
 }, [coins, sortOrder, materialFilter])
 
+const totalValue = useMemo(() => {
+  return visibleCoins.reduce((sum, c) => sum + (Number(c.price) || 0), 0)
+}, [visibleCoins])
+
+const formatEUR = (value) =>
+  new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 2
+  }).format(value)
 
 
  const getMaterialColor = (material) => {
@@ -105,6 +115,16 @@ const getMaterialGlow = (material) => {
     <p className="text-sm text-white/40 font-light">
   Showing {visibleCoins.length} of {coins.length} {coins.length === 1 ? 'coin' : 'coins'}
 </p>
+
+<div className="px-5 py-3 border border-white/10 bg-white/5 rounded-xl backdrop-blur-sm">
+  <div className="text-xs font-light tracking-widest uppercase text-white/40 mb-1">
+    Total value
+  </div>
+  <div className="text-2xl font-light text-white/85 tracking-wide">
+    {formatEUR(totalValue)}
+  </div>
+</div>
+
 
   </div>
 
