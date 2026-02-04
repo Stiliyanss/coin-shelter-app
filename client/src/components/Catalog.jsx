@@ -21,7 +21,19 @@ function Catalog({ coins, onAddCoin, onEditCoin, onDeleteCoin }) {
       list.sort((a, b) => Number(a.price ?? 0) - Number(b.price ?? 0));
     } else if (sortOrder === "price_desc") {
       list.sort((a, b) => Number(b.price ?? 0) - Number(a.price ?? 0));
-    }
+    } else if (sortOrder === 'date_asc') {
+  list.sort((a, b) => {
+    const da = a.purchased_at ? new Date(a.purchased_at).getTime() : Infinity
+    const db = b.purchased_at ? new Date(b.purchased_at).getTime() : Infinity
+    return da - db
+  })
+} else if (sortOrder === 'date_desc') {
+  list.sort((a, b) => {
+    const da = a.purchased_at ? new Date(a.purchased_at).getTime() : -Infinity
+    const db = b.purchased_at ? new Date(b.purchased_at).getTime() : -Infinity
+    return db - da
+  })
+}
 
     return list;
   }, [coins, sortOrder, materialFilter]);
@@ -185,6 +197,12 @@ function Catalog({ coins, onAddCoin, onEditCoin, onDeleteCoin }) {
                     </option>
                     <option value="price_desc" className="bg-black">
                       Price: High → Low
+                    </option>
+                     <option value="date_desc" className="bg-black">
+                      Purchase date: New → Old
+                    </option>
+                    <option value="date_asc" className="bg-black">
+                      Purchase date: Old → New
                     </option>
                   </select>
                 </div>
