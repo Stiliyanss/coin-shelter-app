@@ -3,6 +3,9 @@ import { supabase } from './lib/supabaseClient'
 
 import Background from './components/Background'
 import Header from './components/Header'
+import Home from './components/Home'
+import AuthModal from './components/AuthModal'
+
 import AddCoin from './components/AddCoin'
 import EditCoin from './components/EditCoin'
 import Catalog from './components/Catalog'
@@ -204,52 +207,23 @@ function App() {
 
 
         <main>
-          {currentPage === 'home' ? (
-            <div className="max-w-6xl mx-auto px-6 py-16">
-              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                <h2 className="text-3xl font-light tracking-wide text-white/80 mb-4">
-                  Welcome to Coins Shelter
-                </h2>
-                <p className="text-sm text-white/40 font-light tracking-wide max-w-sm mb-12 leading-relaxed">
-                  Manage your coin collection with ease. Add coins, view your catalog, and keep track of your valuable collection.
-                </p>
+  {currentPage === 'home' ? (
+    <Home
+      isAuthenticated={isAuthenticated}
+      coinsCount={coins.length}
+      onAddCoin={() => isAuthenticated && setShowAddForm(true)}
+      onGoCatalog={() => setCurrentPage('catalog')}
+    />
+  ) : (
+    <Catalog
+      coins={coins}
+      onAddCoin={() => setShowAddForm(true)}
+      onEditCoin={handleEditCoin}
+      onDeleteCoin={handleDeleteCoin}
+    />
+  )}
+</main>
 
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                  <button
-                  onClick={() => isAuthenticated && setShowAddForm(true)}
-  disabled={!isAuthenticated}
-  className={`w-full sm:w-auto group relative px-8 py-3 border backdrop-blur-sm transition-all duration-300
-    ${isAuthenticated
-      ? 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-amber-400/50'
-      : 'border-white/10 bg-white/5 opacity-40 cursor-not-allowed'
-    }`}
-                  >
-                    <span className="text-sm font-light tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">
-                      Add Coin
-                    </span>
-                  </button>
-                  {coins.length > 0 && (
-                    <button
-                      onClick={() => setCurrentPage('catalog')}
-                      className="w-full sm:w-auto group relative px-8 py-3 border border-amber-400/50 bg-amber-400/10 hover:bg-amber-400/20 hover:border-amber-400/70 transition-all duration-300"
-                    >
-                      <span className="text-sm font-light tracking-widest uppercase text-white/90">
-                        View Catalog
-                      </span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <Catalog
-              coins={coins}
-              onAddCoin={() => setShowAddForm(true)}
-              onEditCoin={handleEditCoin}
-              onDeleteCoin={handleDeleteCoin}
-            />
-          )}
-        </main>
       </div>
 
       {showAddForm && (
@@ -270,30 +244,15 @@ function App() {
         />
       )}
 
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="relative bg-black border border-white/10 rounded-2xl max-w-md w-full">
-            <button
-              onClick={handleCloseAuth}
-              className="absolute top-4 right-4 text-white/40 hover:text-white/70 transition-colors text-2xl leading-none z-10"
-            >
-              ×
-            </button>
+      <AuthModal
+  isOpen={showAuthModal}
+  authPage={authPage}
+  onClose={handleCloseAuth}
+  onAuthSuccess={handleAuthSuccess}
+  onSwitchToLogin={() => setAuthPage('login')}
+  onSwitchToRegister={() => setAuthPage('register')}
+/>
 
-            {authPage === 'login' ? (
-              <Login
-                onAuthSuccess={handleAuthSuccess}
-                onSwitchToRegister={() => setAuthPage('register')}
-              />
-            ) : (
-              <Register
-                onAuthSuccess={handleAuthSuccess}
-                onSwitchToLogin={() => setAuthPage('login')}
-              />
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
