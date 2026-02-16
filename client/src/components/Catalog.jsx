@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
 import CoinDetails from "./CoinDetails";
+import EmptyCatalog from "./EmptyCatalog";
+import StatsModal from "./StatsModal";
+import CoinCard from "./CoinCard";
 
 function Catalog({ coins, onAddCoin, onEditCoin, onDeleteCoin }) {
   const [selectedCoin, setSelectedCoin] = useState(null);
@@ -155,37 +158,7 @@ const stats = useMemo(() => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {coins.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-          <div className="mb-12 relative">
-            <div className="w-32 h-32 rounded-full border border-white/10 bg-gradient-to-br from-white/5 to-white/0 flex items-center justify-center backdrop-blur-sm">
-              <div className="w-20 h-20 rounded-full border-2 border-amber-400/30 flex items-center justify-center">
-                <span className="text-4xl opacity-50">🪙</span>
-              </div>
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full shadow-lg shadow-amber-400/50 animate-pulse"></div>
-            <div
-              className="absolute -bottom-1 -left-1 w-3 h-3 bg-slate-400 rounded-full shadow-lg shadow-slate-400/50 animate-pulse"
-              style={{ animationDelay: "1s" }}
-            ></div>
-          </div>
-
-          <h2 className="text-3xl font-light tracking-wide text-white/80 mb-4">
-            No Coins Yet
-          </h2>
-          <p className="text-sm text-white/40 font-light tracking-wide max-w-sm mb-12 leading-relaxed">
-            Start building your collection by adding your first coin
-          </p>
-
-          <button
-            onClick={onAddCoin}
-            className="group relative px-8 py-3 border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 hover:border-amber-400/50"
-          >
-            <span className="text-sm font-light tracking-widest uppercase text-white/70 group-hover:text-white transition-colors">
-              Add Coin
-            </span>
-            <div className="absolute inset-0 border border-amber-400/0 group-hover:border-amber-400/30 transition-all duration-300"></div>
-          </button>
-        </div>
+        <EmptyCatalog onAddCoin={onAddCoin} />
       ) : (
         <>
           <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -290,326 +263,32 @@ const stats = useMemo(() => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {visibleCoins.map((coin) => {
-              const mat = (coin.material ?? '').toString().toLowerCase()
-
-              return(
-              <div
-                key={coin.id}
-                className="group relative bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-amber-400/30 transition-all duration-300 backdrop-blur-sm"
-              >
-                {/* Material indicator */}
-                <div
-                  className={`absolute top-4 right-4 w-3 h-3 rounded-full bg-gradient-to-br ${getMaterialColor(coin.material)} shadow-lg ${getMaterialGlow(coin.material)}`}
-                ></div>
-
-                {/* Coin Image */}
-                <div className="aspect-square bg-white/5 flex items-center justify-center overflow-hidden">
-                  {coin.image ? (
-                    <img
-                      src={coin.image}
-                      alt={coin.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        e.target.nextSibling.style.display = "flex";
-                      }}
-                    />
-                  ) : null}
-                  <div
-                    className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${getMaterialColor(coin.material)}/20 ${coin.image ? "hidden" : ""}`}
-                  >
-                    <span className="text-6xl opacity-30">🪙</span>
-                  </div>
-                </div>
-
-                {/* Coin Info */}
-                <div className="p-5">
-                  <h3 className="text-lg font-light text-white/90 mb-2 line-clamp-2">
-                    {coin.name}
-                  </h3>
-
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className={`text-xs px-3 py-1 rounded-full bg-gradient-to-r ${getMaterialColor(coin.material)}/20 text-white/70 font-light tracking-wide border`}
-                      style={{
-                        borderColor:
-    mat === "gold"
-      ? "rgba(251, 191, 36, 0.3)"
-      : mat === "silver"
-        ? "rgba(148, 163, 184, 0.3)"
-        : mat === "platinum"
-          ? "rgba(156, 163, 175, 0.3)"
-          : mat === "copper"
-            ? "rgba(234, 88, 12, 0.3)"
-            : "rgba(255, 255, 255, 0.1)",
-}}
-                    >
-                      {coin.material}
-                    </span>
-                    <span className="text-lg font-light text-white/90">
-                      €{parseFloat(coin.price || 0).toFixed(2)}
-                    </span>
-                  </div>
-
-                  {coin.purchased_at && (
-                    <div className="flex items-center gap-2 text-xs font-light tracking-widest uppercase text-amber-400/70 mb-2">
-                      Purchased on: {coin.purchased_at}
-                    </div>
-                  )}
-
-                  {coin.description && (
-                    <p className="text-xs text-white/50 font-light leading-relaxed line-clamp-2 mb-4">
-                      {coin.description}
-                    </p>
-                  )}
-
-                  <div className="pt-3 border-t border-white/5 flex gap-2">
-                    <button
-                      onClick={() => setSelectedCoin(coin)}
-                      className="flex-1 text-xs font-light tracking-widest uppercase text-white/50 hover:text-white/70 transition-colors"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEditCoin(coin);
-                      }}
-                      className="px-3 py-1 text-xs font-light tracking-widest uppercase text-amber-400/70 hover:text-amber-400 border border-amber-400/30 hover:border-amber-400/50 rounded transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteCoin(coin.id);
-                      }}
-                      className="px-3 py-1 text-xs font-light tracking-widest uppercase text-red-400/70 hover:text-red-400 border border-red-400/30 hover:border-red-400/50 rounded transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )})}
+            {visibleCoins.map((coin) => (
+    <CoinCard
+      key={coin.id}
+      coin={coin}
+      getMaterialColor={getMaterialColor}
+      getMaterialGlow={getMaterialGlow}
+      onViewDetails={() => setSelectedCoin(coin)}
+      onEdit={() => onEditCoin(coin)}
+      onDelete={() => onDeleteCoin(coin.id)}
+    />
+  ))}
           </div>
         </>
       )}
 
-      {showStats && stats && (
-  <div
-    className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-    onClick={() => setShowStats(false)}
-  >
-    <div
-      className="relative w-full max-w-4xl max-h-[85vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/60 backdrop-blur-xl shadow-2xl overflow-hidden"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* subtle ambient glow */}
-      <div className="absolute -top-24 -left-24 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
-      <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-slate-400/10 rounded-full blur-3xl" />
+      <StatsModal
+  isOpen={showStats}
+  stats={stats}
+  onClose={() => setShowStats(false)}
+  formatEUR={formatEUR}
+  formatMonthLabel={formatMonthLabel}
+/>
 
-      <div className="relative p-6 sm:p-8">
-        <button
-          onClick={() => setShowStats(false)}
-          className="absolute top-4 right-4 text-white/40 hover:text-white/70 transition-colors text-2xl leading-none"
-          aria-label="Close"
-        >
-          ×
-        </button>
-
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center">
-            <span className="text-lg">📊</span>
-          </div>
-          <div>
-            <h3 className="text-lg sm:text-xl font-light tracking-wide text-white/85">
-              Collection Stats
-            </h3>
-            <p className="text-xs font-light tracking-widest uppercase text-white/35 mt-1">
-              Based on current filters
-            </p>
-          </div>
-        </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-  {/* LEFT SIDE — KPI + Insights */}
-  <div className="lg:col-span-1 space-y-4">
-
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="text-[10px] tracking-widest uppercase text-white/35 mb-2">
-        Total coins
-      </div>
-      <div className="text-2xl font-light text-white/85">
-        {stats.total}
-      </div>
-    </div>
-
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="text-[10px] tracking-widest uppercase text-white/35 mb-2">
-        Avg. price
-      </div>
-      <div className="text-2xl font-light text-white/85">
-        {formatEUR(stats.avg)}
-      </div>
-    </div>
-
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="text-[10px] tracking-widest uppercase text-white/35 mb-2">
-        Most expensive
-      </div>
-      <div className="text-sm text-white/80 font-light line-clamp-1">
-        {stats.mostExpensive ? stats.mostExpensive.name : '—'}
-      </div>
-      <div className="text-xs text-white/40 font-light mt-1">
-        {stats.mostExpensive
-          ? formatEUR(Number(stats.mostExpensive.price || 0))
-          : ''}
-      </div>
-    </div>
-
-    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="text-[10px] tracking-widest uppercase text-white/35 mb-2">
-        Highest spending month
-      </div>
-      <div className="text-sm text-white/80 font-light">
-        {stats.highestMonthEntry
-          ? `${formatMonthLabel(stats.highestMonthEntry[0])}`
-          : '—'}
-      </div>
-      <div className="text-xs text-white/40 font-light mt-1">
-        {stats.highestMonthEntry
-          ? formatEUR(stats.highestMonthEntry[1])
-          : ''}
-      </div>
-    </div>
-
-  </div>
-
-  {/* RIGHT SIDE — Material Distribution */}
-  <div className="lg:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-6">
-    <div className="flex items-center justify-between mb-6">
-      <div className="text-xs font-light tracking-widest uppercase text-white/40">
-        Material Distribution
-      </div>
-      <div className="text-[10px] tracking-widest uppercase text-white/30">
-        %
-      </div>
-    </div>
-
-    <div className="space-y-5">
-      <StatBar label="Gold" value={stats.goldPct} tone="gold" />
-      <StatBar label="Silver" value={stats.silverPct} tone="silver" />
-      <StatBar label="Platinum" value={stats.platinumPct} tone="platinum" />
-      <StatBar label="Copper" value={stats.copperPct} tone="copper" />
-      <StatBar label="Other" value={stats.otherPct} tone="other" />
-    </div>
-  </div>
-
-</div>
-
-
-        {/* Insights */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          
-
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <div className="text-[10px] tracking-widest uppercase text-white/35 mb-2">
-              Spend this month
-            </div>
-            <div className="text-sm text-white/80 font-light">
-              {formatEUR(stats.spendThisMonth)}
-            </div>
-            <div className="text-xs text-white/40 font-light mt-1">
-              Current month total
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:col-span-2">
-            <div className="text-[10px] tracking-widest uppercase text-white/35 mb-2">
-              Highest spending month
-            </div>
-            <div className="text-sm text-white/80 font-light">
-              {stats.highestMonthEntry
-                ? `${formatMonthLabel(stats.highestMonthEntry[0])} — ${formatEUR(stats.highestMonthEntry[1])}`
-                : '—'}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={() => setShowStats(false)}
-            className="px-5 py-2 border border-white/10 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-light tracking-widest uppercase text-white/70 transition-all duration-300"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
 
     </div>
   );
 }
-
-function StatBar({ label, value, tone }) {
-  const pct = Math.max(0, Math.min(100, Number(value) || 0))
-
-  const toneClasses = {
-    gold: {
-      fill: 'from-amber-400/70 to-yellow-600/70',
-      glow: 'shadow-amber-500/20'
-    },
-    silver: {
-      fill: 'from-slate-300/70 to-slate-500/70',
-      glow: 'shadow-slate-400/20'
-    },
-    platinum: {
-      fill: 'from-gray-300/70 to-gray-500/70',
-      glow: 'shadow-gray-400/20'
-    },
-    copper: {
-      fill: 'from-orange-500/70 to-red-700/70',
-      glow: 'shadow-orange-500/20'
-    },
-    other: {
-      fill: 'from-white/20 to-white/30',
-      glow: 'shadow-white/10'
-    }
-  }
-
-  const { fill, glow } = toneClasses[tone] || toneClasses.other
-
-  return (
-    <div className="grid grid-cols-[1fr_auto] items-center gap-4">
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-white/60 font-light tracking-wide">
-            {label}
-          </span>
-          <span className="text-xs text-white/45 font-light tabular-nums">
-            {pct.toFixed(1)}%
-          </span>
-        </div>
-
-        <div className="h-2 rounded-full bg-white/5 border border-white/10 overflow-hidden">
-          <div
-            className={`h-full rounded-full bg-gradient-to-r ${fill} ${glow} transition-all duration-700`}
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      </div>
-
-      <div className="hidden sm:block text-[10px] text-white/25 tracking-widest uppercase">
-        {Math.round(pct)}%
-      </div>
-    </div>
-  )
-}
-
 
 export default Catalog;
