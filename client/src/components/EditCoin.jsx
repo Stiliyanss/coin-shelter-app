@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react'
 
+const toDateInputValue = (value) => {
+  if (!value) return ''
+  // handles "YYYY-MM-DD", "YYYY-MM-DDTHH:mm:ss...", and Date-ish strings
+  return String(value).split('T')[0]
+}
+
 function EditCoin({ coin, onUpdateCoin, onCancel }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -24,6 +30,7 @@ function EditCoin({ coin, onUpdateCoin, onCancel }) {
         image: coin.image || '',
         material: coin.material || '',
         price: coin.price || '',
+        purchased_at: toDateInputValue(coin.purchased_at),
         description: coin.description || '',
         mint: coin.mint || '',
         country: coin.country || '',
