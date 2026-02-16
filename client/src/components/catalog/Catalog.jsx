@@ -3,8 +3,8 @@ import CoinDetails from "./CoinDetails";
 import EmptyCatalog from "./EmptyCatalog";
 import StatsModal from "./StatsModal";
 import CoinCard from "./CoinCard";
-import MaterialFilter from "./MaterialFIlter";
-import SortSelect from "./SortSelect";
+import MaterialFilter from "../filters/MaterialFIlter";
+import SortSelect from "../filters/SortSelect";
 
 function Catalog({ coins, onAddCoin, onEditCoin, onDeleteCoin }) {
   const [selectedCoin, setSelectedCoin] = useState(null);

@@ -12,7 +12,7 @@ export default function Header({
     <header className="border-b border-white/5 backdrop-blur-sm bg-black/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
+          <button className="flex items-center gap-4" onClick={() => setCurrentPage('home')}>
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 flex items-center justify-center text-xl shadow-lg shadow-amber-500/50">
               🪙
             </div>
@@ -24,7 +24,7 @@ export default function Header({
                 Coin Collection Manager
               </p>
             </div>
-          </div>
+          </button>
 
           <nav className="flex flex-wrap items-center justify-start sm:justify-end gap-2 sm:gap-4">
             <button

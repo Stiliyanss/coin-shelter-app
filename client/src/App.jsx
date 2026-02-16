@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './lib/supabaseClient'
 
-import Background from './components/Background'
-import Header from './components/Header'
+import Background from './components/layout/Background'
+import Header from './components/layout/Header'
 import Home from './components/Home'
-import AuthModal from './components/AuthModal'
+import AuthModal from './components/auth/AuthModal'
 
-import AddCoin from './components/AddCoin'
-import EditCoin from './components/EditCoin'
-import Catalog from './components/Catalog'
-import Login from './components/Login'
-import Register from './components/Register'
+import AddCoin from './components/coins/AddCoin'
+import EditCoin from './components/coins/EditCoin'
+import Catalog from './components/catalog/Catalog'
+
 
 function App() {
   const [coins, setCoins] = useState([])

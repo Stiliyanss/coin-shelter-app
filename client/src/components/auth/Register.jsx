@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
+import { supabase } from '../../lib/supabaseClient'
 
-function Login({ onSwitchToRegister, onAuthSuccess }) {
+function Register({ onSwitchToLogin, onAuthSuccess }) {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   })
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (e) => {
@@ -15,22 +18,37 @@ function Login({ onSwitchToRegister, onAuthSuccess }) {
       [e.target.name]: e.target.value
     })
     setError('')
+    setMessage('')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields')
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters')
       return
     }
 
     setIsSubmitting(true)
     setError('')
+    setMessage('')
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email: formData.email,
-      password: formData.password
+      password: formData.password,
+      options: {
+        data: { name: formData.name }
+      }
     })
 
     setIsSubmitting(false)
@@ -40,7 +58,12 @@ function Login({ onSwitchToRegister, onAuthSuccess }) {
       return
     }
 
-    // App.jsx will receive auth state change; close modal for UX.
+    // If email confirmation is ON, session may be null until user confirms.
+    if (!data.session) {
+      setMessage('Registration successful. Please check your email to confirm your account.')
+      return
+    }
+
     onAuthSuccess?.()
   }
 
@@ -60,10 +83,10 @@ function Login({ onSwitchToRegister, onAuthSuccess }) {
               🪙
             </div>
             <h1 className="text-3xl font-light tracking-wide text-white/90 mb-2">
-              Welcome Back
+              Create Account
             </h1>
             <p className="text-sm text-white/40 font-light">
-              Sign in to your account
+              Start managing your coin collection
             </p>
           </div>
 
@@ -73,7 +96,28 @@ function Login({ onSwitchToRegister, onAuthSuccess }) {
             </div>
           )}
 
+          {message && (
+            <div className="mb-6 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+              <p className="text-sm text-emerald-300 font-light">{message}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-xs font-light tracking-widest uppercase text-white/50 mb-2">
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 focus:bg-white/10 transition-all duration-300"
+                placeholder="Your name"
+              />
+            </div>
+
             <div>
               <label className="block text-xs font-light tracking-widest uppercase text-white/50 mb-2">
                 Email
@@ -104,25 +148,40 @@ function Login({ onSwitchToRegister, onAuthSuccess }) {
               />
             </div>
 
+            <div>
+              <label className="block text-xs font-light tracking-widest uppercase text-white/50 mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-amber-400/50 focus:bg-white/10 transition-all duration-300"
+                placeholder="••••••••"
+              />
+            </div>
+
             <button
               type="submit"
               disabled={isSubmitting}
               className="w-full px-6 py-3 border border-amber-400/50 bg-amber-400/10 hover:bg-amber-400/20 hover:border-amber-400/70 transition-all duration-300 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <span className="text-sm font-light tracking-widest uppercase text-white/90">
-                {isSubmitting ? 'Signing In...' : 'Sign In'}
+                {isSubmitting ? 'Registering...' : 'Register'}
               </span>
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-white/40 font-light">
-              Don't have an account?{' '}
+              Already have an account?{' '}
               <button
-                onClick={onSwitchToRegister}
+                onClick={onSwitchToLogin}
                 className="text-amber-400/70 hover:text-amber-400 transition-colors font-light"
               >
-                Register
+                Sign In
               </button>
             </p>
           </div>
@@ -132,4 +191,4 @@ function Login({ onSwitchToRegister, onAuthSuccess }) {
   )
 }
 
-export default Login
+export default Register
